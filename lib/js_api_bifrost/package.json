@@ -1,0 +1,40 @@
+{
+    "name": "@polkawallet/js-api-bifrost",
+    "main": "index.js",
+    "license": "Apache-2.0",
+    "scripts": {
+        "clean": "rm -rf dist/*",
+        "build": "webpack -p --mode production",
+        "build-dev": "webpack -d --mode development",
+        "prettier": "prettier --write '**/*.{js,jsx,tsx,ts,less,md,json}'"
+    },
+    "resolutions": {
+        "@polkadot/api": "^4.2.2-4"
+    },
+    "dependencies": {
+        "@polkadot/api": "^4.2.2-4",
+        "@bifrost-finance/api": "^1.1.9",
+        "@edgeware/node-types": "^3.3.2",
+        "@polkadot/ui-shared": "0.70.1",
+        "@walletconnect/client": "2.0.0-alpha.26",
+        "bn.js": "^5.1.2",
+        "oo7-substrate": "^0.8.0",
+        "secp256k1": "^3.8.0",
+        "typescript": "^4.1.3"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.8.3",
+        "@babel/polyfill": "^7.8.3",
+        "@babel/preset-env": "^7.8.3",
+        "@babel/preset-typescript": "^7.10.4",
+        "@webpack-cli/info": "^0.2.0",
+        "@webpack-cli/init": "^0.3.0",
+        "babel-loader": "^8.0.6",
+        "eslint": "^6.8.0",
+        "eslint-config-prettier": "^6.9.0",
+        "eslint-plugin-prettier": "^3.1.2",
+        "prettier": "^1.19.1",
+        "webpack": "^4.41.5",
+        "webpack-cli": "^3.3.10"
+    }
+}
