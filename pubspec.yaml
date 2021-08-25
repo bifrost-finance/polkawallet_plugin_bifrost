@@ -38,7 +38,6 @@ flutter:
 
   assets:
     - lib/js_service_bifrost/dist/main.js
-    - assets/images/public/bg_bifrost.png
     - assets/images/public/bifrost.png
     - assets/images/public/bifrost_gray.png
     - assets/images/tokens/BNC.png

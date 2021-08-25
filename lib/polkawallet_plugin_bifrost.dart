@@ -23,10 +23,8 @@ class PluginBifrost extends PolkawalletPlugin {
     name: 'bifrost',
     genesisHash: bifrost_genesis_hash,
     ss58: 6,
-    primaryColor: Colors.deepPurple,
+    primaryColor: bifrost_jaco_blue,
     gradientColor: Colors.purple,
-    backgroundImage: AssetImage(
-        'packages/polkawallet_plugin_bifrost/assets/images/public/bg_bifrost.png'),
     icon: Image.asset(
         'packages/polkawallet_plugin_bifrost/assets/images/public/bifrost.png'),
     iconDisabled: Image.asset(
