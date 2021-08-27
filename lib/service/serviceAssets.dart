@@ -33,7 +33,7 @@ class ServiceAssets {
 
   Future<void> subscribeTokenBalances(
       String address, Function(List<TokenBalanceData>) callback) async {
-    final tokens = List.of([{"VSToken":"KSM"},{"Token":"KSM"},{"Stable":"KUSD"},{"VSBond":["KSM",2001,13,20]}]);
+    final tokens = List.of([{"VSToken":"KSM"},{"Token":"KSM"},{"Stable":"KUSD"},{"VSBond":["BNC",2001,13,20]}]);
 
     _tokenBalances.clear();
 
