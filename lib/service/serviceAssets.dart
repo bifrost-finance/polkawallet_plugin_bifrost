@@ -17,14 +17,20 @@ class ServiceAssets {
   Future<void> _subscribeTokenBalances(
       String address, List tokens, Function(Map) callback) async {
     tokens.forEach((e) {
-      final symbol = e['Token']!=null ? e['Token'] : e['VSToken']!=null ? 'vs${e['VSToken']}' : e['Stable']!=null ? e['Stable'] : "vsBOND";
+      final symbol = e['Token'] != null
+          ? e['Token']
+          : e['VSToken'] != null
+          ? 'vs${e['VSToken']}'
+          : e['Stable'] != null
+          ? e['Stable']
+          : "vsBOND";
 
       final channel = '$_tokenBalanceChannel$e';
       plugin.sdk.api.subscribeMessage(
         'api.query.tokens.accounts',
         [address, e],
         channel,
-        (Map data) {
+            (Map data) {
           callback({'symbol': symbol, 'balance': data});
         },
       );
@@ -33,7 +39,14 @@ class ServiceAssets {
 
   Future<void> subscribeTokenBalances(
       String address, Function(List<TokenBalanceData>) callback) async {
-    final tokens = List.of([{"VSToken":"KSM"},{"Token":"KSM"},{"Stable":"KUSD"},{"VSBond":["BNC",2001,13,20]}]);
+    final tokens = List.of([
+      {"VSToken": "KSM"},
+      {"Token": "KSM"},
+      {"Stable": "KUSD"},
+      {
+        "VSBond": ["BNC", 2001, 13, 20]
+      }
+    ]);
 
     _tokenBalances.clear();
 
@@ -45,19 +58,23 @@ class ServiceAssets {
 
       callback(_tokenBalances.values
           .map((e) => TokenBalanceData(
-                id: e['symbol'],
-                name: e['symbol'],
-                symbol: e['symbol'],
-                decimals: 12,
-                amount: e['balance']['free'].toString(),
-              ))
+        id: e['symbol'],
+        name: e['symbol'],
+        symbol: e['symbol'],
+        decimals: 12,
+        amount: e['symbol'] == 'vsBOND' || e['symbol'] == 'vsKSM'
+            ? (BigInt.parse(e['balance']['reserved'].toString()) +
+            BigInt.parse(e['balance']['free'].toString()))
+            .toString()
+            : e['balance']['free'].toString(),
+      ))
           .toList());
     });
   }
 
   void unsubscribeTokenBalances(String address) async {
     final tokens =
-        List.of(plugin.networkConst['syntheticTokens']['syntheticCurrencyIds']);
+    List.of(plugin.networkConst['syntheticTokens']['syntheticCurrencyIds']);
     tokens.forEach((e) {
       plugin.sdk.api.unsubscribeMessage('$_tokenBalanceChannel$e');
     });
@@ -67,7 +84,7 @@ class ServiceAssets {
     await plugin.sdk.api.service.webView.subscribeMessage(
       'bifrost.subscribeMessage(bifrostApi, "currencies", "oracleValues", ["Aggregated"], "$_priceSubscribeChannel")',
       _priceSubscribeChannel,
-      (List res) {
+          (List res) {
         store.assets.setTokenPrices(res);
       },
     );
