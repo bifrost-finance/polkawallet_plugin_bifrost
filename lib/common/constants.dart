@@ -5,6 +5,11 @@ const int SECONDS_OF_YEAR = 365 * 24 * 60 * 60; // seconds of one year
 
 const node_list = [
   {
+    'name': 'Liebi',
+    'ss58': 6,
+    'endpoint': 'wss://bifrost-rpc.liebi.com/ws',
+  },
+  {
     'name': 'OnFinality',
     'ss58': 6,
     'endpoint': 'wss://bifrost-parachain.api.onfinality.io/public-ws',
@@ -15,6 +20,8 @@ const node_list = [
     'endpoint': 'wss://bifrost.kusama.elara.patract.io',
   },
 ];
+
+const bifrost_token_ids = ["BNC", "KSM", "KUSD", "VSKSM", "VSBOND"];
 
 const MaterialColor bifrost_jaco_blue = const MaterialColor(
   0xFF9E3BFF,

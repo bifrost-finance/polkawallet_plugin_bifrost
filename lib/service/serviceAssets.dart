@@ -1,92 +1,50 @@
+import 'package:polkawallet_plugin_bifrost/api/bifrostApi.dart';
 import 'package:polkawallet_plugin_bifrost/polkawallet_plugin_bifrost.dart';
+import 'package:polkawallet_plugin_bifrost/service/walletApi.dart';
 import 'package:polkawallet_plugin_bifrost/store/index.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 
 class ServiceAssets {
-  ServiceAssets(this.plugin, this.keyring) : store = plugin.store;
+  ServiceAssets(this.plugin, this.keyring)
+      : api = plugin.api,
+        store = plugin.store;
 
   final PluginBifrost plugin;
   final Keyring keyring;
+  final BifrostApi api;
   final PluginStore store;
 
-  final Map _tokenBalances = {};
-  final _tokenBalanceChannel = 'tokenBalance';
-  final _priceSubscribeChannel = 'BifrostPrices';
+  Future<void> updateTokenBalances(String tokenId) async {
+    String currencyId = tokenId == 'vsKSM'
+        ? '{VSToken: "KSM"}'
+        : tokenId == 'KUSD'
+            ? '{Stable: "$tokenId"}'
+            : tokenId == 'vsBOND'
+                ? '{vsBond: ["BNC",2001,13,20]}'
+                : '{Token: "$tokenId"}';
 
-  Future<void> _subscribeTokenBalances(
-      String address, List tokens, Function(Map) callback) async {
-    tokens.forEach((e) {
-      final symbol = e['Token'] != null
-          ? e['Token']
-          : e['VSToken'] != null
-          ? 'vs${e['VSToken']}'
-          : e['Stable'] != null
-          ? e['Stable']
-          : "vsBOND";
 
-      final channel = '$_tokenBalanceChannel$e';
-      plugin.sdk.api.subscribeMessage(
-        'api.query.tokens.accounts',
-        [address, e],
-        channel,
-            (Map data) {
-          callback({'symbol': symbol, 'balance': data});
-        },
-      );
-    });
-  }
+    final res = await plugin.sdk.webView.evalJavascript(
+        'api.query.tokens.accounts("${keyring.current.address}", $currencyId)');
 
-  Future<void> subscribeTokenBalances(
-      String address, Function(List<TokenBalanceData>) callback) async {
-    final tokens = List.of([
-      {"VSToken": "KSM"},
-      {"Token": "KSM"},
-      {"Stable": "KUSD"},
-      {
-        "VSBond": ["BNC", 2001, 13, 20]
-      }
-    ]);
+    final balances =
+        Map<String, TokenBalanceData>.from(store.assets.tokenBalanceMap);
 
-    _tokenBalances.clear();
+    final data = TokenBalanceData(
+        id: balances[tokenId].id,
+        name: balances[tokenId].name,
+        symbol: balances[tokenId].symbol,
+        decimals: balances[tokenId].decimals,
+        amount: res['free'].toString(),
+        locked: res['frozen'].toString(),
+        reserved: res['reserved'].toString(),
+        detailPageRoute: balances[tokenId].detailPageRoute,
+        price: balances[tokenId].price);
+    balances[tokenId] = data;
 
-    await _subscribeTokenBalances(address, tokens, (Map data) {
-      _tokenBalances[data['symbol']] = data;
-
-      // do not callback if we did not receive enough data.
-      if (_tokenBalances.keys.length < tokens.length) return;
-
-      callback(_tokenBalances.values
-          .map((e) => TokenBalanceData(
-        id: e['symbol'],
-        name: e['symbol'],
-        symbol: e['symbol'],
-        decimals: 12,
-        amount: e['symbol'] == 'vsBOND' || e['symbol'] == 'vsKSM'
-            ? (BigInt.parse(e['balance']['reserved'].toString()) +
-            BigInt.parse(e['balance']['free'].toString()))
-            .toString()
-            : e['balance']['free'].toString(),
-      ))
-          .toList());
-    });
-  }
-
-  void unsubscribeTokenBalances(String address) async {
-    final tokens =
-    List.of(plugin.networkConst['syntheticTokens']['syntheticCurrencyIds']);
-    tokens.forEach((e) {
-      plugin.sdk.api.unsubscribeMessage('$_tokenBalanceChannel$e');
-    });
-  }
-
-  Future<void> subscribeTokenPrices() async {
-    await plugin.sdk.api.service.webView.subscribeMessage(
-      'bifrost.subscribeMessage(bifrostApi, "currencies", "oracleValues", ["Aggregated"], "$_priceSubscribeChannel")',
-      _priceSubscribeChannel,
-          (List res) {
-        store.assets.setTokenPrices(res);
-      },
-    );
+    store.assets
+        .setTokenBalanceMap(balances.values.toList(), keyring.current.pubKey);
+    plugin.balances.setTokens([data]);
   }
 }

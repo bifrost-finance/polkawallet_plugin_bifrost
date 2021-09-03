@@ -1,9 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_ui/components/currencyWithIcon.dart';
 import 'package:polkawallet_plugin_bifrost/polkawallet_plugin_bifrost.dart';
 import 'package:polkawallet_plugin_bifrost/utils/i18n/index.dart';
+import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/components/currencyWithIcon.dart';
+import 'package:polkawallet_ui/components/tokenIcon.dart';
 
 class CurrencySelectPage extends StatelessWidget {
   CurrencySelectPage(this.plugin);
@@ -25,7 +26,7 @@ class CurrencySelectPage extends StatelessWidget {
             return ListTile(
               title: CurrencyWithIcon(
                 i,
-                TokenIcon(i, plugin.tokenIcons),
+                TokenIcon(i ?? '', plugin.tokenIcons),
                 textStyle: Theme.of(context).textTheme.headline4,
               ),
               trailing: Icon(
@@ -39,23 +40,6 @@ class CurrencySelectPage extends StatelessWidget {
           }).toList(),
         ),
       ),
-    );
-  }
-}
-
-class TokenIcon extends StatelessWidget {
-  TokenIcon(this.symbol, this.tokenIcons);
-  final String symbol;
-  final Map<String, Widget> tokenIcons;
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      child: tokenIcons[symbol.toUpperCase()] ??
-          CircleAvatar(
-            child: Text(symbol.toUpperCase().substring(0, 2)),
-          ),
-      width: 32,
-      height: 32,
     );
   }
 }

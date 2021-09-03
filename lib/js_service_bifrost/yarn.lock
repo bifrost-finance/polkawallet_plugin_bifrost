@@ -1225,20 +1225,49 @@
     "@bifrost-finance/types" "^1.2.11"
     "@polkadot/api" "^5.2.1"
 
-"@bifrost-finance/type-definitions@1.2.11", "@bifrost-finance/type-definitions@^1.2.11":
+"@bifrost-finance/api@1.2.24":
+  version "1.2.24"
+  resolved "https://registry.npmjs.org/@bifrost-finance/api/-/api-1.2.24.tgz#11b18933f1c99233aafcaabd963b813ed847ef4f"
+  integrity sha512-q2K4JvRN/UjEpU8U7daZuzF+Hfoh69k4CdBolS8twvlRRPMc55iKDBKGWGwebfM9P0T5iIx0Y2HEW8rJBe0WRw==
+  dependencies:
+    "@babel/runtime" "^7.12.5"
+    "@bifrost-finance/types" "^1.2.24"
+    "@polkadot/api" "^5.2.1"
+
+"@bifrost-finance/type-definitions@1.2.11":
   version "1.2.11"
   resolved "https://registry.npmjs.org/@bifrost-finance/type-definitions/-/type-definitions-1.2.11.tgz#4acde5a8cb442f61a5120347847350a1de74ce8d"
   integrity sha512-p/KX2PI8GBueM+e/N0h4j1q0uNowLjoXfT2IkvOvPRjt5MP8sepfs4pGZf27L1+mic61FQTgi0yEobftdhTqrQ==
   dependencies:
     "@open-web3/orml-type-definitions" "^0.9.4-7"
 
-"@bifrost-finance/types@1.2.11", "@bifrost-finance/types@^1.2.11":
+"@bifrost-finance/type-definitions@1.2.24", "@bifrost-finance/type-definitions@^1.2.11", "@bifrost-finance/type-definitions@^1.2.24":
+  version "1.2.24"
+  resolved "https://registry.npmjs.org/@bifrost-finance/type-definitions/-/type-definitions-1.2.24.tgz#394b7b07cb70dcc48f527d4c5b9247ca15ab1fa5"
+  integrity sha512-RDIl+zifyUTrdN4PCj8xiJagqyODyvy9BtB5JcMKmnMhsizxk5goDFWaeBVlTiDEipzNP8feryZW1+HqTNdjnA==
+  dependencies:
+    "@open-web3/orml-type-definitions" "^0.9.4-7"
+
+"@bifrost-finance/types@1.2.11":
   version "1.2.11"
   resolved "https://registry.npmjs.org/@bifrost-finance/types/-/types-1.2.11.tgz#cfeb5246e58ec93f1ed17c7a45d6ff5f330e40f4"
   integrity sha512-X/0OptrFE+iFqz3cykzpn2bTyp6jo64dCYBJNEzhlI/7uGj+SYJaZ84bj7jxbJrHacaj7vsO9PMfBl1EF9EBOQ==
   dependencies:
     "@babel/runtime" "^7.10.2"
     "@bifrost-finance/type-definitions" "^1.2.11"
+    "@open-web3/api-mobx" "^0.9.4-19"
+    "@open-web3/orml-types" "^0.9.4-19"
+    "@polkadot/api" "^5.2.1"
+    "@polkadot/typegen" "^5.2.1"
+    "@polkadot/types" "^5.2.1"
+
+"@bifrost-finance/types@1.2.24", "@bifrost-finance/types@^1.2.11", "@bifrost-finance/types@^1.2.24":
+  version "1.2.24"
+  resolved "https://registry.npmjs.org/@bifrost-finance/types/-/types-1.2.24.tgz#1551ba4583d7b205a5d5113e7c808b0cefdda461"
+  integrity sha512-yG/6k6IEx38zC8CUsAyn1IUBC1RFSMFIJNSqPyWCD2cBSoNofRGyd0gjCTucflsgy1lZu+qUWwWWoyG4x5JfMw==
+  dependencies:
+    "@babel/runtime" "^7.10.2"
+    "@bifrost-finance/type-definitions" "^1.2.24"
     "@open-web3/api-mobx" "^0.9.4-19"
     "@open-web3/orml-types" "^0.9.4-19"
     "@polkadot/api" "^5.2.1"

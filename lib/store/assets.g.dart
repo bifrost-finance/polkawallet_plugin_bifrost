@@ -24,40 +24,104 @@ mixin _$AssetsStore on _AssetsStore, Store {
     });
   }
 
-  final _$tokenPricesAtom = Atom(name: '_AssetsStore.tokenPrices');
+  final _$pricesAtom = Atom(name: '_AssetsStore.prices');
 
   @override
-  Map<String, BifrostPriceData> get tokenPrices {
-    _$tokenPricesAtom.reportRead();
-    return super.tokenPrices;
+  Map<String, BigInt> get prices {
+    _$pricesAtom.reportRead();
+    return super.prices;
   }
 
   @override
-  set tokenPrices(Map<String, BifrostPriceData> value) {
-    _$tokenPricesAtom.reportWrite(value, super.tokenPrices, () {
-      super.tokenPrices = value;
+  set prices(Map<String, BigInt> value) {
+    _$pricesAtom.reportWrite(value, super.prices, () {
+      super.prices = value;
+    });
+  }
+
+  final _$marketPricesAtom = Atom(name: '_AssetsStore.marketPrices');
+
+  @override
+  ObservableMap<String, double> get marketPrices {
+    _$marketPricesAtom.reportRead();
+    return super.marketPrices;
+  }
+
+  @override
+  set marketPrices(ObservableMap<String, double> value) {
+    _$marketPricesAtom.reportWrite(value, super.marketPrices, () {
+      super.marketPrices = value;
+    });
+  }
+
+  final _$txsAtom = Atom(name: '_AssetsStore.txs');
+
+  @override
+  ObservableList<TransferData> get txs {
+    _$txsAtom.reportRead();
+    return super.txs;
+  }
+
+  @override
+  set txs(ObservableList<TransferData> value) {
+    _$txsAtom.reportWrite(value, super.txs, () {
+      super.txs = value;
     });
   }
 
   final _$_AssetsStoreActionController = ActionController(name: '_AssetsStore');
 
   @override
-  void setTokenBalanceMap(List<TokenBalanceData> list) {
+  void setTokenBalanceMap(List<TokenBalanceData> list, String pubKey,
+      {bool shouldCache = true}) {
     final _$actionInfo = _$_AssetsStoreActionController.startAction(
         name: '_AssetsStore.setTokenBalanceMap');
     try {
-      return super.setTokenBalanceMap(list);
+      return super.setTokenBalanceMap(list, pubKey, shouldCache: shouldCache);
     } finally {
       _$_AssetsStoreActionController.endAction(_$actionInfo);
     }
   }
 
   @override
-  void setTokenPrices(List<dynamic> prices) {
+  void setPrices(Map<String, BigInt> data) {
     final _$actionInfo = _$_AssetsStoreActionController.startAction(
-        name: '_AssetsStore.setTokenPrices');
+        name: '_AssetsStore.setPrices');
     try {
-      return super.setTokenPrices(prices);
+      return super.setPrices(data);
+    } finally {
+      _$_AssetsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setMarketPrices(Map<String, double> data) {
+    final _$actionInfo = _$_AssetsStoreActionController.startAction(
+        name: '_AssetsStore.setMarketPrices');
+    try {
+      return super.setMarketPrices(data);
+    } finally {
+      _$_AssetsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setTxs(List<dynamic> list, int decimals) {
+    final _$actionInfo =
+        _$_AssetsStoreActionController.startAction(name: '_AssetsStore.setTxs');
+    try {
+      return super.setTxs(list, decimals);
+    } finally {
+      _$_AssetsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void loadCache(String pubKey) {
+    final _$actionInfo = _$_AssetsStoreActionController.startAction(
+        name: '_AssetsStore.loadCache');
+    try {
+      return super.loadCache(pubKey);
     } finally {
       _$_AssetsStoreActionController.endAction(_$actionInfo);
     }
@@ -67,7 +131,9 @@ mixin _$AssetsStore on _AssetsStore, Store {
   String toString() {
     return '''
 tokenBalanceMap: ${tokenBalanceMap},
-tokenPrices: ${tokenPrices}
+prices: ${prices},
+marketPrices: ${marketPrices},
+txs: ${txs},
     ''';
   }
 }
