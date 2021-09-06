@@ -16,20 +16,36 @@ class ServiceAssets {
   final PluginStore store;
 
   Future<void> updateTokenBalances(String tokenId) async {
-    String currencyId = tokenId == 'vsKSM'
-        ? '{VSToken: "KSM"}'
-        : tokenId == 'KUSD'
-            ? '{Stable: "$tokenId"}'
-            : tokenId == 'vsBOND'
-                ? '{vsBond: ["BNC",2001,13,20]}'
-                : '{Token: "$tokenId"}';
+    String currencyId;
 
+    switch (tokenId) {
+      case 'vsKSM':
+        {
+          currencyId = '{VSToken: "KSM"}';
+        }
+        break;
+      case 'KUSD':
+        {
+          currencyId = '{Stable: "$tokenId"}';
+        }
+        break;
+      case 'vsBOND':
+        {
+          currencyId = '{vsBond: ["BNC",2001,13,20]}';
+        }
+        break;
+      default:
+        {
+          currencyId = '{Token: "$tokenId"}';
+        }
+        break;
+    }
 
     final res = await plugin.sdk.webView.evalJavascript(
         'api.query.tokens.accounts("${keyring.current.address}", $currencyId)');
 
     final balances =
-        Map<String, TokenBalanceData>.from(store.assets.tokenBalanceMap);
+    Map<String, TokenBalanceData>.from(store.assets.tokenBalanceMap);
 
     final data = TokenBalanceData(
         id: balances[tokenId].id,

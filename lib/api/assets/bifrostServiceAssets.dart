@@ -27,20 +27,41 @@ class BifrostServiceAssets {
   Future<void> subscribeTokenBalances(
       String address, List tokens, Function(Map) callback) async {
     tokens.forEach((e) {
-      final symbol = e['Token'] != null
-          ? e['Token']
-          : e['VSToken'] != null
-          ? 'vs${e['VSToken']}'
-          : e['Stable'] != null
-          ? e['Stable']
-          : "vsBOND";
+      String symbol;
+      switch (e.keys.toList().first) {
+        case 'VSToken':
+          {
+            symbol = 'vs${e['VSToken']}';
+          }
+          break;
+        case 'Stable':
+          {
+            symbol = e['Stable'];
+          }
+          break;
+        case 'VSBond':
+          {
+            symbol = 'vsBOND';
+          }
+          break;
+        case 'Token':
+          {
+            symbol = e['Token'];
+          }
+          break;
+        default:
+          {
+            symbol = e['Token'];
+          }
+          break;
+      }
 
       final channel = '$tokenBalanceChannel$e';
       plugin.sdk.api.subscribeMessage(
         'api.query.tokens.accounts',
         [address, e],
         channel,
-        (Map data) {
+            (Map data) {
           callback({
             'symbol': symbol,
             'name': symbol,
@@ -76,12 +97,12 @@ class BifrostServiceAssets {
   }
 
   Future<bool> checkExistentialDepositForTransfer(
-    String address,
-    String token,
-    int decimal,
-    String amount, {
-    String direction = 'to',
-  }) async {
+      String address,
+      String token,
+      int decimal,
+      String amount, {
+        String direction = 'to',
+      }) async {
     final res = await plugin.sdk.webView.evalJavascript(
         'bifrost.checkExistentialDepositForTransfer(api, "$address", "$token", $decimal, $amount, "$direction")');
     return res['result'] as bool;

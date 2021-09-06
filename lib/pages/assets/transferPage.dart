@@ -25,6 +25,7 @@ import 'package:polkawallet_ui/utils/index.dart';
 
 class TransferPage extends StatefulWidget {
   TransferPage(this.plugin, this.keyring);
+
   final PluginBifrost plugin;
   final Keyring keyring;
 
@@ -82,17 +83,33 @@ class _TransferPageState extends State<TransferPage> {
     final sender = TxSenderData(
         widget.keyring.current.address, widget.keyring.current.pubKey);
     final txInfo = TxInfoData('currencies', 'transfer', sender);
-    final currencyId = _token == 'vsKSM'
-        ? {"VSToken": "KSM", "decimals": 12}
-        : _token == 'KUSD'
-            ? {"Stable": _token, "decimals": 12}
-            : _token == 'vsBOND'
-                ? {
-                    "vsBond": ["BNC", 2001, 13, 20],
-                    "decimals": 12
-                  }
-                : {"Token": _token, "decimals": 12};
+    var currencyId;
 
+    switch (_token) {
+      case 'vsKSM':
+        {
+          currencyId = {"VSToken": "KSM", "decimals": 12};
+        }
+        break;
+      case 'KUSD':
+        {
+          currencyId = {"Stable": _token, "decimals": 12};
+        }
+        break;
+      case 'vsBOND':
+        {
+          currencyId = {
+            "vsBond": ["BNC", 2001, 13, 20],
+            "decimals": 12
+          };
+        }
+        break;
+      default:
+        {
+          currencyId = {"Token": _token, "decimals": 12};
+        }
+        break;
+    }
     final fee = await widget.plugin.sdk.api.tx.estimateFees(
         txInfo, [widget.keyring.current.address, currencyId, '1000000000']);
 
@@ -130,16 +147,33 @@ class _TransferPageState extends State<TransferPage> {
       final decimals =
           widget.plugin.store.assets.tokenBalanceMap[_token].decimals;
 
-      final currencyId = _token == 'vsKSM'
-          ? {"VSToken": "KSM", "decimals": decimals}
-          : _token == 'KUSD'
-              ? {"Stable": _token, "decimals": decimals}
-              : _token == 'vsBOND'
-                  ? {
-                      "vsBond": ["BNC", 2001, 13, 20],
-                      "decimals": decimals
-                    }
-                  : {"Token": _token, "decimals": decimals};
+      var currencyId;
+
+      switch (_token) {
+        case 'vsKSM':
+          {
+            currencyId = {"VSToken": "KSM", "decimals": decimals};
+          }
+          break;
+        case 'KUSD':
+          {
+            currencyId = {"Stable": _token, "decimals": decimals};
+          }
+          break;
+        case 'vsBOND':
+          {
+            currencyId = {
+              "vsBond": ["BNC", 2001, 13, 20],
+              "decimals": decimals
+            };
+          }
+          break;
+        default:
+          {
+            currencyId = {"Token": _token, "decimals": decimals};
+          }
+          break;
+      }
 
       final params = [
         // params.to
@@ -155,7 +189,7 @@ class _TransferPageState extends State<TransferPage> {
         module: 'currencies',
         call: 'transfer',
         txTitle:
-            '${I18n.of(context).getDic(i18n_full_dic_bifrost, 'bifrost')['transfer']} $tokenView',
+        '${I18n.of(context).getDic(i18n_full_dic_bifrost, 'bifrost')['transfer']} $tokenView',
         txDisplay: {
           "destination": _accountTo.address,
           "currency": tokenView,
@@ -175,7 +209,7 @@ class _TransferPageState extends State<TransferPage> {
       _accountTo = to;
     });
     final icon =
-        await widget.plugin.sdk.api.account.getAddressIcons([acc.address]);
+    await widget.plugin.sdk.api.account.getAddressIcons([acc.address]);
     if (icon != null) {
       final accWithIcon = KeyPairData();
       accWithIcon.address = acc.address;
@@ -217,7 +251,7 @@ class _TransferPageState extends State<TransferPage> {
       builder: (_) {
         final dic = I18n.of(context).getDic(i18n_full_dic_bifrost, 'common');
         final dicBifrost =
-            I18n.of(context).getDic(i18n_full_dic_bifrost, 'bifrost');
+        I18n.of(context).getDic(i18n_full_dic_bifrost, 'bifrost');
         final String args = ModalRoute.of(context).settings.arguments;
         final token = _token ?? args;
         final tokenView = token;
@@ -232,8 +266,8 @@ class _TransferPageState extends State<TransferPage> {
         final existDepositToken = token;
         final existDeposit = existDepositToken == nativeToken
             ? Fmt.balanceInt(widget
-                .plugin.networkConst['balances']['existentialDeposit']
-                .toString())
+            .plugin.networkConst['balances']['existentialDeposit']
+            .toString())
             : Fmt.balanceInt('100000000');
 
         final chainTo = _chainTo ?? widget.plugin.basic.name;
@@ -284,17 +318,17 @@ class _TransferPageState extends State<TransferPage> {
                         ),
                         _accountToError != null
                             ? Container(
-                                margin: EdgeInsets.only(top: 4),
-                                child: Text(_accountToError,
-                                    style: TextStyle(
-                                        fontSize: 12, color: Colors.red)),
-                              )
+                          margin: EdgeInsets.only(top: 4),
+                          child: Text(_accountToError,
+                              style: TextStyle(
+                                  fontSize: 12, color: Colors.red)),
+                        )
                             : Container(),
                         TextFormField(
                           decoration: InputDecoration(
                             hintText: dic['amount'],
                             labelText:
-                                '${dic['amount']} (${dic['balance']}: ${Fmt.priceFloorBigInt(
+                            '${dic['amount']} (${dic['balance']}: ${Fmt.priceFloorBigInt(
                               available,
                               decimals,
                               lengthMax: 6,
@@ -303,7 +337,7 @@ class _TransferPageState extends State<TransferPage> {
                           inputFormatters: [UI.decimalInputFormatter(decimals)],
                           controller: _amountCtrl,
                           keyboardType:
-                              TextInputType.numberWithOptions(decimal: true),
+                          TextInputType.numberWithOptions(decimal: true),
                           validator: (v) {
                             if (v.isEmpty) {
                               return dic['amount.error'];
@@ -334,7 +368,7 @@ class _TransferPageState extends State<TransferPage> {
                                   ),
                                   Row(
                                     mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceBetween,
                                     children: [
                                       CurrencyWithIcon(
                                         tokenView,
@@ -376,111 +410,111 @@ class _TransferPageState extends State<TransferPage> {
                         ),
                         token == relayChainToken
                             ? GestureDetector(
-                                child: Container(
-                                  color: Theme.of(context).canvasColor,
-                                  margin: EdgeInsets.only(bottom: 16),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Padding(
-                                        padding: EdgeInsets.only(bottom: 4),
-                                        child: Text(
-                                          dicBifrost['cross.chain'],
-                                          style: TextStyle(
-                                              color: colorGrey, fontSize: 12),
-                                        ),
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: <Widget>[
-                                          Row(
-                                            children: <Widget>[
-                                              Container(
-                                                margin:
-                                                    EdgeInsets.only(right: 8),
-                                                width: 32,
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(32),
-                                                  child: isCrossChain
-                                                      ? TokenIcon(
-                                                          token,
-                                                          widget.plugin
-                                                              .tokenIcons)
-                                                      : widget
-                                                          .plugin.basic.icon,
-                                                ),
-                                              ),
-                                              Text(chainTo.toUpperCase())
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              isCrossChain
-                                                  ? TextTag(
-                                                      dicBifrost['cross.xcm'],
-                                                      margin: EdgeInsets.only(
-                                                          right: 8),
-                                                      color: Colors.red)
-                                                  : Container(),
-                                              Icon(
-                                                Icons.arrow_forward_ios,
-                                                size: 18,
-                                                color: colorGrey,
-                                              )
-                                            ],
-                                          )
-                                        ],
-                                      ),
-                                    ],
+                          child: Container(
+                            color: Theme.of(context).canvasColor,
+                            margin: EdgeInsets.only(bottom: 16),
+                            child: Column(
+                              crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: 4),
+                                  child: Text(
+                                    dicBifrost['cross.chain'],
+                                    style: TextStyle(
+                                        color: colorGrey, fontSize: 12),
                                   ),
                                 ),
-                              )
+                                Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    Row(
+                                      children: <Widget>[
+                                        Container(
+                                          margin:
+                                          EdgeInsets.only(right: 8),
+                                          width: 32,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                            BorderRadius.circular(32),
+                                            child: isCrossChain
+                                                ? TokenIcon(
+                                                token,
+                                                widget.plugin
+                                                    .tokenIcons)
+                                                : widget
+                                                .plugin.basic.icon,
+                                          ),
+                                        ),
+                                        Text(chainTo.toUpperCase())
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        isCrossChain
+                                            ? TextTag(
+                                            dicBifrost['cross.xcm'],
+                                            margin: EdgeInsets.only(
+                                                right: 8),
+                                            color: Colors.red)
+                                            : Container(),
+                                        Icon(
+                                          Icons.arrow_forward_ios,
+                                          size: 18,
+                                          color: colorGrey,
+                                        )
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
                             : Container(),
                         isCrossChain
                             ? Padding(
-                                padding: EdgeInsets.only(top: 16),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Padding(
-                                      padding: EdgeInsets.only(right: 4),
-                                      child: Text(dicBifrost['cross.exist']),
-                                    ),
-                                    TapTooltip(
-                                      message: dicBifrost['cross.exist.msg'],
-                                      child: Icon(
-                                        Icons.info,
-                                        size: 16,
-                                        color: Theme.of(context)
-                                            .unselectedWidgetColor,
-                                      ),
-                                    ),
-                                    Expanded(child: Container(width: 2)),
-                                    Text(
-                                        '${Fmt.priceCeilBigInt(destExistDeposit, decimals, lengthMax: 6)} $tokenView'),
-                                  ],
+                          padding: EdgeInsets.only(top: 16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(right: 4),
+                                child: Text(dicBifrost['cross.exist']),
+                              ),
+                              TapTooltip(
+                                message: dicBifrost['cross.exist.msg'],
+                                child: Icon(
+                                  Icons.info,
+                                  size: 16,
+                                  color: Theme.of(context)
+                                      .unselectedWidgetColor,
                                 ),
-                              )
+                              ),
+                              Expanded(child: Container(width: 2)),
+                              Text(
+                                  '${Fmt.priceCeilBigInt(destExistDeposit, decimals, lengthMax: 6)} $tokenView'),
+                            ],
+                          ),
+                        )
                             : Container(),
                         isCrossChain
                             ? Padding(
-                                padding: EdgeInsets.only(top: 16),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Padding(
-                                      padding: EdgeInsets.only(right: 4),
-                                      child: Text(dicBifrost['cross.fee']),
-                                    ),
-                                    Expanded(child: Container(width: 2)),
-                                    Text(
-                                        '${Fmt.priceCeilBigInt(destFee, decimals, lengthMax: 6)} $tokenView'),
-                                  ],
-                                ),
-                              )
+                          padding: EdgeInsets.only(top: 16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(right: 4),
+                                child: Text(dicBifrost['cross.fee']),
+                              ),
+                              Expanded(child: Container(width: 2)),
+                              Text(
+                                  '${Fmt.priceCeilBigInt(destFee, decimals, lengthMax: 6)} $tokenView'),
+                            ],
+                          ),
+                        )
                             : Container(),
                         Padding(
                           padding: EdgeInsets.only(top: 16),
@@ -497,7 +531,7 @@ class _TransferPageState extends State<TransferPage> {
                                   Icons.info,
                                   size: 16,
                                   color:
-                                      Theme.of(context).unselectedWidgetColor,
+                                  Theme.of(context).unselectedWidgetColor,
                                 ),
                               ),
                               Expanded(child: Container(width: 2)),
@@ -508,20 +542,20 @@ class _TransferPageState extends State<TransferPage> {
                         ),
                         _fee?.partialFee != null
                             ? Padding(
-                                padding: EdgeInsets.only(top: 16),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Padding(
-                                      padding: EdgeInsets.only(right: 4),
-                                      child: Text(dicBifrost['transfer.fee']),
-                                    ),
-                                    Expanded(child: Container(width: 2)),
-                                    Text(
-                                        '${Fmt.priceCeilBigInt(Fmt.balanceInt(_fee.partialFee.toString()), decimals, lengthMax: 6)} $nativeToken'),
-                                  ],
-                                ),
-                              )
+                          padding: EdgeInsets.only(top: 16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(right: 4),
+                                child: Text(dicBifrost['transfer.fee']),
+                              ),
+                              Expanded(child: Container(width: 2)),
+                              Text(
+                                  '${Fmt.priceCeilBigInt(Fmt.balanceInt(_fee.partialFee.toString()), decimals, lengthMax: 6)} $nativeToken'),
+                            ],
+                          ),
+                        )
                             : Container(),
                         _token == 'KSM'
                             ? _KSMCrossChainTransferWarning()
