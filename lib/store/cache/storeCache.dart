@@ -1,5 +1,5 @@
 import 'package:get_storage/get_storage.dart';
-import 'package:polkawallet_plugin_bifrost/common/constants.dart';
+import 'package:polkawallet_plugin_bifrost/common/constants/index.dart';
 
 class StoreCache {
   static final _storage = () => GetStorage(bifrost_plugin_cache_key);
