@@ -5,15 +5,20 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:polkawallet_plugin_bifrost/api/bifrostApi.dart';
 import 'package:polkawallet_plugin_bifrost/api/bifrostService.dart';
 import 'package:polkawallet_plugin_bifrost/common/constants/index.dart';
 import 'package:polkawallet_plugin_bifrost/common/constants/nodeList.dart';
+import 'package:polkawallet_plugin_bifrost/pages/bifrostEntry.dart';
 import 'package:polkawallet_plugin_bifrost/pages/assets/tokenDetailPage.dart';
 import 'package:polkawallet_plugin_bifrost/pages/assets/transferDetailPage.dart';
 import 'package:polkawallet_plugin_bifrost/pages/assets/transferPage.dart';
 import 'package:polkawallet_plugin_bifrost/pages/currencySelectPage.dart';
+import 'package:polkawallet_plugin_bifrost/pages/gov/democracy/proposalDetailPage.dart';
+import 'package:polkawallet_plugin_bifrost/pages/gov/democracy/referendumVotePage.dart';
+import 'package:polkawallet_plugin_bifrost/pages/gov/democracyPage.dart';
 import 'package:polkawallet_plugin_bifrost/service/index.dart';
 import 'package:polkawallet_plugin_bifrost/store/cache/storeCache.dart';
 import 'package:polkawallet_plugin_bifrost/store/index.dart';
@@ -32,7 +37,7 @@ class PluginBifrost extends PolkawalletPlugin {
           name: 'bifrost',
           genesisHash: bifrost_genesis_hash,
           ss58: 6,
-          primaryColor:  bifrost_jaco_blue,
+          primaryColor: bifrost_jaco_blue,
           icon: Image.asset(
               'packages/polkawallet_plugin_bifrost/assets/images/public/bifrost.png'),
           iconDisabled: Image.asset(
@@ -71,7 +76,17 @@ class PluginBifrost extends PolkawalletPlugin {
 
   @override
   List<HomeNavItem> getNavItems(BuildContext context, Keyring keyring) {
-    return [];
+    return [
+      HomeNavItem(
+        text: 'Bifrost',
+        icon: SvgPicture.asset(
+            'packages/polkawallet_plugin_bifrost/assets/images/public/bifrost_empty.svg',
+            color: Theme.of(context).disabledColor),
+        iconActive: Image.asset(
+            'packages/polkawallet_plugin_bifrost/assets/images/public/bifrost.png'),
+        content: BifrostEntry(this, keyring),
+      )
+    ];
   }
 
   @override
@@ -85,6 +100,11 @@ class PluginBifrost extends PolkawalletPlugin {
       TokenDetailPage.route: (_) => TokenDetailPage(this, keyring),
       TransferPage.route: (_) => TransferPage(this, keyring),
       TransferDetailPage.route: (_) => TransferDetailPage(this, keyring),
+
+      // Gov pages
+      DemocracyPage.route: (_) => DemocracyPage(this, keyring),
+      ReferendumVotePage.route: (_) => ReferendumVotePage(this, keyring),
+      ProposalDetailPage.route: (_) => ProposalDetailPage(this, keyring),
     };
   }
 

@@ -4,7 +4,7 @@ export default {
   chains: {
     Edgeware: "edgeware",
     Kusama: "kusama",
-    "Kusama CC3": "kusama",
+    "Kusama CC3": "kusama"
   },
   create: (chain: string, path: string, data: any, hash: string) =>
     `https://commonwealth.im/${chain}/${path}/${
@@ -15,7 +15,7 @@ export default {
     council: "proposal/councilmotion",
     proposal: "proposal/democracyproposal",
     referendum: "proposal/referendum",
-    treasury: "proposal/treasuryproposal",
+    treasury: "proposal/treasuryproposal"
   },
-  url: "https://commonwealth.im/",
+  url: "https://commonwealth.im/"
 };

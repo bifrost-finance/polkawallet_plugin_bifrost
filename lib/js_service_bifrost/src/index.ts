@@ -1,16 +1,20 @@
-import "@babel/polyfill";
-import { options } from "@bifrost-finance/api";
-import { ApiPromise, WsProvider } from "@polkadot/api";
-import { subscribeMessage, getNetworkConst, getNetworkProperties } from "./service/setting";
-import { genLinks } from "./utils/config/config";
+import { WsProvider, ApiPromise } from "@polkadot/api";
+import {
+  subscribeMessage,
+  getNetworkConst,
+  getNetworkProperties
+} from "./service/setting";
 import keyring from "./service/keyring";
+import { options } from "@bifrost-finance/api";
 import account from "./service/account";
+import gov from "./service/gov";
+import { genLinks } from "./utils/config/config";
 
-// send message to JSChannel: PolkaWallet
+// console.log will send message to MsgChannel to App
 function send(path: string, data: any) {
   console.log(JSON.stringify({ path, data }));
 }
-send("log", "main js loaded");
+send("log", "bifrost main js loaded");
 (<any>window).send = send;
 
 async function connect(nodes: string[]) {
@@ -37,8 +41,8 @@ async function connect(nodes: string[]) {
   getNetworkConst,
   getNetworkProperties,
   subscribeMessage,
-  genLinks,
+  genLinks
 };
-
 (<any>window).keyring = keyring;
 (<any>window).account = account;
+(<any>window).gov = gov;

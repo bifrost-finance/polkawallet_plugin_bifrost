@@ -7,7 +7,7 @@ const externals = {
   Commonwealth,
   Polkascan,
   Polkassembly,
-  Subscan,
+  Subscan
 };
 
 export default externals;

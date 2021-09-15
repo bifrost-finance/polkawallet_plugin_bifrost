@@ -38,6 +38,7 @@ flutter:
     - lib/js_service_bifrost/dist/main.js
     - assets/images/public/bifrost.png
     - assets/images/public/bifrost_gray.png
+    - assets/images/public/bifrost_empty.svg
     - assets/images/tokens/BNC.png
     - assets/images/tokens/VSKSM.png
     - assets/images/tokens/KSM.png
@@ -47,6 +48,8 @@ flutter:
     - assets/images/assets_down.png
     - assets/images/assets_send.png
     - assets/images/scan.svg
+    - assets/images/democracy.svg
+    - assets/images/tx_failed.svg
 
   # For details regarding assets in packages, see
   # https://flutter.dev/assets-and-images/#from-packages

@@ -21,8 +21,8 @@ export async function genLinks(
 
       return {
         name: withShort ? _shortName(name) : name,
-        link: create(extChain, extPath, data, hash),
+        link: create(extChain, extPath, data, hash)
       };
     })
-    .filter((e) => e);
+    .filter(e => e);
 }

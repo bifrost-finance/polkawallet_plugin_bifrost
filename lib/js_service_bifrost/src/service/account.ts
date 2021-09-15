@@ -14,7 +14,7 @@ let keyring = new Keyring({ ss58Format: 0, type: "sr25519" });
  * Get svg icons of addresses.
  */
 async function genIcons(addresses: string[]) {
-  return addresses.map((i) => {
+  return addresses.map(i => {
     const circles = polkadotIcon(i, { isAlternative: false })
       .map(
         ({ cx, cy, fill, r }) =>
@@ -23,7 +23,7 @@ async function genIcons(addresses: string[]) {
       .join("");
     return [
       i,
-      `<svg viewBox='0 0 64 64' xmlns='http://www.w3.org/2000/svg'>${circles}</svg>`,
+      `<svg viewBox='0 0 64 64' xmlns='http://www.w3.org/2000/svg'>${circles}</svg>`
     ];
   });
 }
@@ -33,7 +33,7 @@ async function genIcons(addresses: string[]) {
  */
 async function genPubKeyIcons(pubKeys: string[]) {
   const icons = await genIcons(
-    pubKeys.map((key) => keyring.encodeAddress(hexToU8a(key), 2))
+    pubKeys.map(key => keyring.encodeAddress(hexToU8a(key), 2))
   );
   return icons.map((i, index) => {
     i[0] = pubKeys[index];
@@ -48,7 +48,7 @@ async function decodeAddress(addresses: string[]) {
   await cryptoWaitReady();
   try {
     const res = {};
-    addresses.forEach((i) => {
+    addresses.forEach(i => {
       const pubKey = u8aToHex(keyring.decodeAddress(i));
       (<any>res)[pubKey] = i;
     });
@@ -65,13 +65,30 @@ async function decodeAddress(addresses: string[]) {
 async function encodeAddress(pubKeys: string[], ss58Formats: number[]) {
   await cryptoWaitReady();
   const res = {};
-  ss58Formats.forEach((ss58) => {
+  ss58Formats.forEach(ss58 => {
     (<any>res)[ss58] = {};
-    pubKeys.forEach((i) => {
+    pubKeys.forEach(i => {
       (<any>res)[ss58][i] = keyring.encodeAddress(hexToU8a(i), ss58);
     });
   });
   return res;
+}
+
+/**
+ * decode address and check it's ss58Format
+ */
+async function checkAddressFormat(address: string, ss58: number) {
+  await cryptoWaitReady();
+  try {
+    const formated = keyring.encodeAddress(
+      keyring.decodeAddress(address),
+      ss58
+    );
+    return formated.toUpperCase() == address.toUpperCase();
+  } catch (err) {
+    (<any>window).send("log", { error: err.message });
+    return false;
+  }
 }
 
 /**
@@ -93,15 +110,15 @@ async function queryAddressWithAccountIndex(
 async function queryAccountsBonded(api: ApiPromise, pubKeys: string[]) {
   return Promise.all(
     pubKeys
-      .map((key) => keyring.encodeAddress(hexToU8a(key), 2))
-      .map((i) =>
+      .map(key => keyring.encodeAddress(hexToU8a(key), 2))
+      .map(i =>
         Promise.all([api.query.staking.bonded(i), api.query.staking.ledger(i)])
       )
-  ).then((ls) =>
+  ).then(ls =>
     ls.map((i, index) => [
       pubKeys[index],
       i[0],
-      i[1].toHuman() ? i[1].toHuman()["stash"] : null,
+      i[1].toHuman() ? i[1].toHuman()["stash"] : null
     ])
   );
 }
@@ -118,12 +135,12 @@ async function getBalance(
     const lockedBreakdown = res.lockedBreakdown.map((i: any) => {
       return {
         ...i,
-        use: hexToString(i.id.toHex()),
+        use: hexToString(i.id.toHex())
       };
     });
     return {
       ...res,
-      lockedBreakdown,
+      lockedBreakdown
     };
   };
   if (msgChannel) {
@@ -139,18 +156,19 @@ async function getBalance(
  * get humen info of addresses
  */
 async function getAccountIndex(api: ApiPromise, addresses: string[]) {
-  return api.derive.accounts.indexes().then((res) => {
-    return Promise.all(addresses.map((i) => api.derive.accounts.info(i)));
+  return api.derive.accounts.indexes().then(res => {
+    return Promise.all(addresses.map(i => api.derive.accounts.info(i)));
   });
 }
 
 export default {
   encodeAddress,
   decodeAddress,
+  checkAddressFormat,
   queryAddressWithAccountIndex,
   genIcons,
   genPubKeyIcons,
   queryAccountsBonded,
   getBalance,
-  getAccountIndex,
+  getAccountIndex
 };

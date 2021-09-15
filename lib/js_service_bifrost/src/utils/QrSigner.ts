@@ -1,7 +1,18 @@
 import { ApiPromise } from "@polkadot/api";
 import { SubmittableExtrinsic } from "@polkadot/api/types";
-import { compactFromU8a, hexStripPrefix, hexToU8a, u8aConcat, u8aToHex, u8aToU8a } from "@polkadot/util";
-import { encodeAddress, decodeAddress, blake2AsU8a } from "@polkadot/util-crypto";
+import {
+  compactFromU8a,
+  hexStripPrefix,
+  hexToU8a,
+  u8aConcat,
+  u8aToHex,
+  u8aToU8a
+} from "@polkadot/util";
+import {
+  encodeAddress,
+  decodeAddress,
+  blake2AsU8a
+} from "@polkadot/util-crypto";
 import { SUBSTRATE_NETWORK_LIST } from "../constants/networkSpect";
 import { QRSigner, QRSubmittable } from "../types/scannerTypes";
 
@@ -75,7 +86,10 @@ function _rawDataToU8A(rawData: string) {
   return bytes;
 }
 
-async function _constructDataFromBytes(bytes: Uint8Array, multipartComplete = false) {
+async function _constructDataFromBytes(
+  bytes: Uint8Array,
+  multipartComplete = false
+) {
   const frameInfo = hexStripPrefix(u8aToHex(bytes.slice(0, 5)));
   const frameCount = parseInt(frameInfo.substr(2, 4), 16);
   const isMultipart = frameCount > 1; // for simplicity, even single frame payloads are marked as multipart.
@@ -88,7 +102,7 @@ async function _constructDataFromBytes(bytes: Uint8Array, multipartComplete = fa
       currentFrame,
       frameCount,
       isMultipart,
-      partData: uosAfterFrames,
+      partData: uosAfterFrames
     };
     return partData;
   }
@@ -105,9 +119,14 @@ async function _constructDataFromBytes(bytes: Uint8Array, multipartComplete = fa
       case "45": {
         // Ethereum UOS payload
         const data = {
-          data: {}, // for consistency with legacy data format.
+          data: {} // for consistency with legacy data format.
         };
-        action = firstByte === "00" || firstByte === "01" ? "signData" : firstByte === "01" ? "signTransaction" : null;
+        action =
+          firstByte === "00" || firstByte === "01"
+            ? "signData"
+            : firstByte === "01"
+            ? "signTransaction"
+            : null;
         const address = uosAfterFrames.substr(4, 44);
 
         data["action"] = action;
@@ -124,10 +143,15 @@ async function _constructDataFromBytes(bytes: Uint8Array, multipartComplete = fa
       case "53": {
         // Substrate UOS payload
         const data = {
-          data: {}, // for consistency with legacy data format.
+          data: {} // for consistency with legacy data format.
         };
         try {
-          data.data["crypto"] = firstByte === "00" ? "ed25519" : firstByte === "01" ? "sr25519" : null;
+          data.data["crypto"] =
+            firstByte === "00"
+              ? "ed25519"
+              : firstByte === "01"
+              ? "sr25519"
+              : null;
           const pubKeyHex = uosAfterFrames.substr(6, 64);
           const publicKeyAsBytes = hexToU8a("0x" + pubKeyHex);
           const hexEncodedData = "0x" + uosAfterFrames.slice(70);
@@ -138,7 +162,9 @@ async function _constructDataFromBytes(bytes: Uint8Array, multipartComplete = fa
           const isOversized = rawPayload.length > 256;
           const network = SUBSTRATE_NETWORK_LIST[genesisHash];
           if (!network) {
-            throw new Error(`Signer does not currently support a chain with genesis hash: ${genesisHash}`);
+            throw new Error(
+              `Signer does not currently support a chain with genesis hash: ${genesisHash}`
+            );
           }
 
           switch (secondByte) {
@@ -153,7 +179,10 @@ async function _constructDataFromBytes(bytes: Uint8Array, multipartComplete = fa
               // 	? await blake2b(u8aToHex(payload, -1, false))
               // 	: rawPayload;
               data.data["data"] = rawPayload; // ignore oversized data for now
-              data.data["account"] = encodeAddress(publicKeyAsBytes, network.prefix); // encode to the prefix;
+              data.data["account"] = encodeAddress(
+                publicKeyAsBytes,
+                network.prefix
+              ); // encode to the prefix;
 
               break;
             case "01": // data is a hash
@@ -161,11 +190,17 @@ async function _constructDataFromBytes(bytes: Uint8Array, multipartComplete = fa
               data["oversized"] = false;
               data["isHash"] = true;
               data.data["data"] = hexPayload;
-              data.data["account"] = encodeAddress(publicKeyAsBytes, network.prefix); // default to Kusama
+              data.data["account"] = encodeAddress(
+                publicKeyAsBytes,
+                network.prefix
+              ); // default to Kusama
               break;
           }
         } catch (e) {
-          throw new Error("Error: something went wrong decoding the Substrate UOS payload: " + uosAfterFrames);
+          throw new Error(
+            "Error: something went wrong decoding the Substrate UOS payload: " +
+              uosAfterFrames
+          );
         }
         return data;
       }
@@ -178,25 +213,39 @@ async function _constructDataFromBytes(bytes: Uint8Array, multipartComplete = fa
 }
 
 function _isMultipartData(parsedData: any) {
-  const hasMultiFrames = parsedData.frameCount !== undefined && parsedData.frameCount > 1;
+  const hasMultiFrames =
+    parsedData.frameCount !== undefined && parsedData.frameCount > 1;
   return parsedData.isMultipart || hasMultiFrames;
 }
 
-async function _setPartData(currentFrame: number, frameCount: number, partData: string) {
+async function _setPartData(
+  currentFrame: number,
+  frameCount: number,
+  partData: string
+) {
   // set it once only
   if (!signer.totalFrameCount) {
     const newArray = new Array(frameCount).fill(null);
     signer.multipartData = newArray;
     signer.totalFrameCount = frameCount;
   }
-  const { completedFramesCount, multipartComplete, multipartData, totalFrameCount } = signer;
+  const {
+    completedFramesCount,
+    multipartComplete,
+    multipartData,
+    totalFrameCount
+  } = signer;
   const partDataAsBytes = new Uint8Array(partData.length / 2);
 
   for (let i = 0; i < partDataAsBytes.length; i++) {
     partDataAsBytes[i] = parseInt(partData.substr(i * 2, 2), 16);
   }
 
-  if (currentFrame === 0 && (partDataAsBytes[0] === new Uint8Array([0x00])[0] || partDataAsBytes[0] === new Uint8Array([0x7b])[0])) {
+  if (
+    currentFrame === 0 &&
+    (partDataAsBytes[0] === new Uint8Array([0x00])[0] ||
+      partDataAsBytes[0] === new Uint8Array([0x7b])[0])
+  ) {
     // part_data for frame 0 MUST NOT begin with byte 00 or byte 7B.
     throw new Error("Error decoding invalid part data.");
   }
@@ -215,7 +264,11 @@ async function _setPartData(currentFrame: number, frameCount: number, partData: 
     signer.missedFrames = nextMissedFrames;
     signer.multipartData = nextDataState;
 
-    if (totalFrameCount > 0 && nextCompletedFramesCount === totalFrameCount && !multipartComplete) {
+    if (
+      totalFrameCount > 0 &&
+      nextCompletedFramesCount === totalFrameCount &&
+      !multipartComplete
+    ) {
       // all the frames are filled
       await _integrateMultiPartData();
     }
@@ -235,7 +288,11 @@ async function _integrateMultiPartData() {
   }, new Uint8Array(0));
 
   // unshift the frame info
-  const frameInfo = u8aConcat(MULTIPART, _encodeNumber(totalFrameCount), _encodeNumber(0));
+  const frameInfo = u8aConcat(
+    MULTIPART,
+    _encodeNumber(totalFrameCount),
+    _encodeNumber(0)
+  );
   concatMultipartData = u8aConcat(frameInfo, concatMultipartData);
 
   signer.multipartComplete = true;
@@ -248,9 +305,16 @@ function _encodeNumber(value: number) {
 }
 
 async function _setParsedData(strippedData, multipartComplete = false) {
-  const parsedData = await _constructDataFromBytes(strippedData, multipartComplete);
+  const parsedData = await _constructDataFromBytes(
+    strippedData,
+    multipartComplete
+  );
   if (_isMultipartData(parsedData)) {
-    await _setPartData(parsedData["currentFrame"], parsedData["frameCount"], parsedData["partData"]);
+    await _setPartData(
+      parsedData["currentFrame"],
+      parsedData["frameCount"],
+      parsedData["partData"]
+    );
     return;
   }
 
@@ -275,13 +339,22 @@ export function getSigner() {
 const CMD_HASH = 1;
 const CMD_MORTAL = 2;
 
-export function makeTx(api: ApiPromise, txInfo: any, paramList: any[], ss58: number) {
-  return new Promise((resolve) => {
-    const signer = txInfo.proxy ? encodeAddress(hexToU8a(txInfo.proxy.pubKey), ss58) : txInfo.sender.address;
+export function makeTx(
+  api: ApiPromise,
+  txInfo: any,
+  paramList: any[],
+  ss58: number
+) {
+  return new Promise(resolve => {
+    const signer = txInfo.proxy
+      ? encodeAddress(hexToU8a(txInfo.proxy.pubKey), ss58)
+      : txInfo.sender.address;
     api.derive.tx
       .signingInfo(signer)
       .then(async ({ header, mortalLength, nonce }) => {
-        let tx: SubmittableExtrinsic<"promise"> = api.tx[txInfo.module][txInfo.call](...paramList);
+        let tx: SubmittableExtrinsic<"promise"> = api.tx[txInfo.module][
+          txInfo.call
+        ](...paramList);
         // wrap tx with recovery.asRecovered for proxy tx
         if (txInfo.proxy) {
           tx = api.tx.recovery.asRecovered(txInfo.sender.address, tx);
@@ -292,7 +365,7 @@ export function makeTx(api: ApiPromise, txInfo: any, paramList: any[], ss58: num
           blockNumber: header ? header.number : 0,
           era: api.registry.createType("ExtrinsicEra", {
             current: header.number,
-            period: mortalLength,
+            period: mortalLength
           }),
           genesisHash: api.genesisHash,
           method: tx.method,
@@ -301,32 +374,41 @@ export function makeTx(api: ApiPromise, txInfo: any, paramList: any[], ss58: num
           tip: txInfo.tip,
           runtimeVersion: {
             specVersion: api.runtimeVersion.specVersion,
-            transactionVersion: api.runtimeVersion.transactionVersion,
+            transactionVersion: api.runtimeVersion.transactionVersion
           },
-          version: api.extrinsicVersion,
+          version: api.extrinsicVersion
         });
         const payload = signerPayload.toPayload();
 
         // limit size of the transaction
         const qrIsHashed = payload.method.length > 5000;
         const wrapper = api.registry.createType("ExtrinsicPayload", payload, {
-          version: payload.version,
+          version: payload.version
         });
-        const qrPayload = qrIsHashed ? blake2AsU8a(wrapper.toU8a(true)) : wrapper.toU8a();
+        const qrPayload = qrIsHashed
+          ? blake2AsU8a(wrapper.toU8a(true))
+          : wrapper.toU8a();
         // cache this submittableExtrinsic
         submittable = {
           tx,
-          payload: signerPayload.toPayload(),
+          payload: signerPayload.toPayload()
         };
         // submittable.tx = tx;
         // submittable.payload = signerPayload.toPayload();
         resolve({
           qrAddress: payload.address,
           qrIsHashed,
-          qrPayload: _createFrames(_createSignPayload(payload.address, qrIsHashed ? CMD_HASH : CMD_MORTAL, qrPayload, api.genesisHash))[0],
+          qrPayload: _createFrames(
+            _createSignPayload(
+              payload.address,
+              qrIsHashed ? CMD_HASH : CMD_MORTAL,
+              qrPayload,
+              api.genesisHash
+            )
+          )[0]
         });
       })
-      .catch((err) => resolve({ error: err.message }));
+      .catch(err => resolve({ error: err.message }));
   });
 }
 
@@ -334,8 +416,20 @@ const SUBSTRATE_ID = new Uint8Array([0x53]);
 const CRYPTO_SR25519 = new Uint8Array([0x01]);
 const FRAME_SIZE = 1024;
 
-function _createSignPayload(address: string, cmd: number, payload: Uint8Array | any, genesisHash: Uint8Array | any) {
-  return u8aConcat(SUBSTRATE_ID, CRYPTO_SR25519, new Uint8Array([cmd]), decodeAddress(address), u8aToU8a(payload), u8aToU8a(genesisHash));
+function _createSignPayload(
+  address: string,
+  cmd: number,
+  payload: Uint8Array | any,
+  genesisHash: Uint8Array | any
+) {
+  return u8aConcat(
+    SUBSTRATE_ID,
+    CRYPTO_SR25519,
+    new Uint8Array([cmd]),
+    decodeAddress(address),
+    u8aToU8a(payload),
+    u8aToU8a(genesisHash)
+  );
 }
 
 function _createFrames(input: Uint8Array) {
@@ -345,7 +439,14 @@ function _createFrames(input: Uint8Array) {
     frames.push(input.subarray(idx, idx + FRAME_SIZE));
     idx += FRAME_SIZE;
   }
-  return frames.map((frame, index) => u8aConcat(MULTIPART, _encodeNumber(frames.length), _encodeNumber(index), frame));
+  return frames.map((frame, index) =>
+    u8aConcat(
+      MULTIPART,
+      _encodeNumber(frames.length),
+      _encodeNumber(index),
+      frame
+    )
+  );
 }
 
 export function getSubmittable() {

@@ -5,7 +5,7 @@ export default {
     "Kusama CC3": "kusama",
     Polkadot: "polkadot",
     "Polkadot CC1": "polkadot-cc1",
-    Westend: "westend",
+    Westend: "westend"
   },
   create: (chain: string, path: string, data: any) =>
     `https://${chain}.subscan.io/${path}/${data.toString()}`,
@@ -18,7 +18,7 @@ export default {
     proposal: "democracy_proposal",
     referendum: "referenda",
     techcomm: "tech",
-    treasury: "treasury",
+    treasury: "treasury"
   },
-  url: "https://subscan.io/",
+  url: "https://subscan.io/"
 };

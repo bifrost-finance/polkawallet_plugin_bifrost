@@ -1,6 +1,5 @@
 const Map<String, String> zhCommon = {
-  'acala': 'Polkadot Defi 中心',
-  'bifrost': 'Kusama Defi 中心',
+  'bifrost': 'Bifrost 中心',
   'transfer': '转账',
   'receive': '收款',
   'cancel': '取消',

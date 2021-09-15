@@ -6,7 +6,7 @@ const STRENGTH_MAP = {
   15: 20 * 8,
   18: 24 * 8,
   21: 28 * 8,
-  24: 32 * 8,
+  24: 32 * 8
 };
 
 const seedGenerate = (words = 12) => {

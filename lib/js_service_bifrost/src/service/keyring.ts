@@ -1,10 +1,19 @@
-import { keyExtractSuri, mnemonicGenerate, cryptoWaitReady, signatureVerify } from "@polkadot/util-crypto";
+import {
+  keyExtractSuri,
+  mnemonicGenerate,
+  cryptoWaitReady,
+  signatureVerify
+} from "@polkadot/util-crypto";
 import { hexToU8a, u8aToHex, isHex, stringToU8a } from "@polkadot/util";
 import BN from "bn.js";
-import { parseQrCode, getSigner, makeTx, getSubmittable } from "../utils/QrSigner";
+import {
+  parseQrCode,
+  getSigner,
+  makeTx,
+  getSubmittable
+} from "../utils/QrSigner";
 import metaDataMap from "../constants/networkMetadata";
-import { TypeRegistry } from "@polkadot/types";
-import { Metadata } from "@polkadot/metadata";
+import { Metadata, TypeRegistry } from "@polkadot/types";
 
 import { Keyring } from "@polkadot/keyring";
 import { KeypairType } from "@polkadot/util-crypto/types";
@@ -21,14 +30,19 @@ let keyring = new Keyring({ ss58Format: 0, type: "sr25519" });
 async function gen() {
   const mnemonic = mnemonicGenerate();
   return {
-    mnemonic,
+    mnemonic
   };
 }
 
 /**
  * Import keyPair from mnemonic, rawSeed or keystore.
  */
-function recover(keyType: string, cryptoType: KeypairType, key: string, password: string) {
+function recover(
+  keyType: string,
+  cryptoType: KeypairType,
+  key: string,
+  password: string
+) {
   return new Promise((resolve, reject) => {
     let keyPair: KeyringPair;
     let mnemonic = "";
@@ -53,7 +67,7 @@ function recover(keyType: string, cryptoType: KeypairType, key: string, password
           }
           resolve({
             pubKey: u8aToHex(keyPair.publicKey),
-            ...keyPair.toJson(password),
+            ...keyPair.toJson(password)
           });
           break;
       }
@@ -69,7 +83,7 @@ function recover(keyType: string, cryptoType: KeypairType, key: string, password
         pubKey: u8aToHex(keyPair.publicKey),
         mnemonic,
         rawSeed,
-        ...json,
+        ...json
       });
     } else {
       resolve(null);
@@ -86,15 +100,15 @@ function recover(keyType: string, cryptoType: KeypairType, key: string, password
 async function initKeys(accounts: KeyringPair$Json[], ss58Formats: number[]) {
   await cryptoWaitReady();
   const res = {};
-  ss58Formats.forEach((ss58) => {
+  ss58Formats.forEach(ss58 => {
     (<any>res)[ss58] = {};
   });
 
-  accounts.forEach((i) => {
+  accounts.forEach(i => {
     // import account to keyring
     const keyPair = keyring.addFromJson(i);
     // then encode address into different ss58 formats
-    ss58Formats.forEach((ss58) => {
+    ss58Formats.forEach(ss58 => {
       const pubKey = u8aToHex(keyPair.publicKey);
       (<any>res)[ss58][pubKey] = keyring.encodeAddress(keyPair.publicKey, ss58);
     });
@@ -106,7 +120,9 @@ async function initKeys(accounts: KeyringPair$Json[], ss58Formats: number[]) {
  * estimate gas fee of an extrinsic
  */
 async function txFeeEstimate(api: ApiPromise, txInfo: any, paramList: any[]) {
-  let tx: SubmittableExtrinsic<"promise"> = api.tx[txInfo.module][txInfo.call](...paramList);
+  let tx: SubmittableExtrinsic<"promise"> = api.tx[txInfo.module][txInfo.call](
+    ...paramList
+  );
 
   let sender = txInfo.sender.address;
   if (txInfo.proxy) {
@@ -126,7 +142,7 @@ function _extractEvents(api: ApiPromise, result: SubmittableResult) {
   let success = false;
   let error: DispatchError["type"] = "";
   result.events
-    .filter((event) => !!event.event)
+    .filter(event => !!event.event)
     .map(({ event: { data, method, section } }) => {
       if (section === "system" && method === "ExtrinsicFailed") {
         const [dispatchError] = (data as unknown) as ITuple<[DispatchError]>;
@@ -135,7 +151,9 @@ function _extractEvents(api: ApiPromise, result: SubmittableResult) {
         if (dispatchError.isModule) {
           try {
             const mod = dispatchError.asModule;
-            const err = api.registry.findMetaError(new Uint8Array([mod.index.toNumber(), mod.error.toNumber()]));
+            const err = api.registry.findMetaError(
+              new Uint8Array([mod.index.toNumber(), mod.error.toNumber()])
+            );
 
             message = `${err.section}.${err.name}`;
           } catch (error) {
@@ -144,13 +162,13 @@ function _extractEvents(api: ApiPromise, result: SubmittableResult) {
         }
         (<any>window).send("txUpdateEvent", {
           title: `${section}.${method}`,
-          message,
+          message
         });
         error = message;
       } else {
         (<any>window).send("txUpdateEvent", {
           title: `${section}.${method}`,
-          message: "ok",
+          message: "ok"
         });
         if (section == "system" && method == "ExtrinsicSuccess") {
           success = true;
@@ -163,9 +181,17 @@ function _extractEvents(api: ApiPromise, result: SubmittableResult) {
 /**
  * sign and send extrinsic to network and wait for result.
  */
-function sendTx(api: ApiPromise, txInfo: any, paramList: any[], password: string, msgId: string) {
-  return new Promise(async (resolve) => {
-    let tx: SubmittableExtrinsic<"promise"> = api.tx[txInfo.module][txInfo.call](...paramList);
+function sendTx(
+  api: ApiPromise,
+  txInfo: any,
+  paramList: any[],
+  password: string,
+  msgId: string
+) {
+  return new Promise(async resolve => {
+    let tx: SubmittableExtrinsic<"promise"> = api.tx[txInfo.module][
+      txInfo.call
+    ](...paramList);
 
     let unsub = () => {};
     const onStatusChange = (result: SubmittableResult) => {
@@ -184,10 +210,10 @@ function sendTx(api: ApiPromise, txInfo: any, paramList: any[], password: string
     };
     if (txInfo.isUnsigned) {
       tx.send(onStatusChange)
-        .then((res) => {
+        .then(res => {
           unsub = res;
         })
-        .catch((err) => {
+        .catch(err => {
           resolve({ error: err.message });
         });
       return;
@@ -208,10 +234,10 @@ function sendTx(api: ApiPromise, txInfo: any, paramList: any[], password: string
       resolve({ error: "password check failed" });
     }
     tx.signAndSend(keyPair, { tip: new BN(txInfo.tip, 10) }, onStatusChange)
-      .then((res) => {
+      .then(res => {
         unsub = res;
       })
-      .catch((err) => {
+      .catch(err => {
         resolve({ error: err.message });
       });
   });
@@ -221,7 +247,7 @@ function sendTx(api: ApiPromise, txInfo: any, paramList: any[], password: string
  * check password of an account.
  */
 function checkPassword(pubKey: string, pass: string) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     const keyPair = keyring.getPair(hexToU8a(pubKey));
     try {
       if (!keyPair.isLocked) {
@@ -239,7 +265,7 @@ function checkPassword(pubKey: string, pass: string) {
  * change password of an account.
  */
 function changePassword(pubKey: string, passOld: string, passNew: string) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     const u8aKey = hexToU8a(pubKey);
     const keyPair = keyring.getPair(u8aKey);
     try {
@@ -256,7 +282,7 @@ function changePassword(pubKey: string, passOld: string, passNew: string) {
     keyring.addFromJson(json);
     resolve({
       pubKey: u8aToHex(keyPair.publicKey),
-      ...json,
+      ...json
     });
   });
 }
@@ -264,7 +290,11 @@ function changePassword(pubKey: string, passOld: string, passNew: string) {
 /**
  * check if user input DerivePath valid.
  */
-async function checkDerivePath(seed: string, derivePath: string, pairType: KeypairType) {
+async function checkDerivePath(
+  seed: string,
+  derivePath: string,
+  pairType: KeypairType
+) {
   try {
     const { path } = keyExtractSuri(`${seed}${derivePath}`);
     // we don't allow soft for ed25519
@@ -281,7 +311,7 @@ async function checkDerivePath(seed: string, derivePath: string, pairType: Keypa
  * sign tx with QR
  */
 async function signAsync(chain: string, password: string) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     const { unsignedData } = getSigner();
     const keyPair = keyring.getPair(unsignedData.data.account);
     try {
@@ -294,13 +324,21 @@ async function signAsync(chain: string, password: string) {
       if (!(<any>window).api) {
         const registry = new TypeRegistry();
         registry.setMetadata(new Metadata(registry, metaDataMap[chain]));
-        payload = registry.createType("ExtrinsicPayload", unsignedData.data.data, {
-          version: 4,
-        });
+        payload = registry.createType(
+          "ExtrinsicPayload",
+          unsignedData.data.data,
+          {
+            version: 4
+          }
+        );
       } else {
-        payload = (<any>window).api.registry.createType("ExtrinsicPayload", unsignedData.data.data, {
-          version: (<any>window).api.extrinsicVersion,
-        });
+        payload = (<any>window).api.registry.createType(
+          "ExtrinsicPayload",
+          unsignedData.data.data,
+          {
+            version: (<any>window).api.extrinsicVersion
+          }
+        );
       }
 
       const signed = payload.sign(keyPair);
@@ -315,7 +353,7 @@ async function signAsync(chain: string, password: string) {
  * send tx with signed data from QR
  */
 function addSignatureAndSend(api: ApiPromise, address: string, signed: string) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     const { tx, payload } = getSubmittable();
     if (!!tx.addSignature) {
       tx.addSignature(address, `0x${signed}`, payload);
@@ -337,10 +375,10 @@ function addSignatureAndSend(api: ApiPromise, address: string, signed: string) {
       };
 
       tx.send(onStatusChange)
-        .then((res) => {
+        .then(res => {
           unsub = res;
         })
-        .catch((err) => {
+        .catch(err => {
           resolve({ error: err.message });
         });
     } else {
@@ -353,7 +391,7 @@ function addSignatureAndSend(api: ApiPromise, address: string, signed: string) {
  * sign tx from dapp as extension
  */
 async function signTxAsExtension(password: string, json: any) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     const keyPair = keyring.getPair(json["address"]);
     try {
       if (!keyPair.isLocked) {
@@ -364,14 +402,14 @@ async function signTxAsExtension(password: string, json: any) {
       let registry: any;
       if (!(<any>window).api) {
         registry = new TypeRegistry();
-        registry.setMetadata(new Metadata(registry, metaDataMap["bifrost"]));
+        registry.setMetadata(new Metadata(registry, metaDataMap["acala-tc6"]));
       } else {
         registry = (<any>window).api.registry;
       }
 
       registry.setSignedExtensions(json["signedExtensions"]);
       const payload = registry.createType("ExtrinsicPayload", json, {
-        version: json["version"],
+        version: json["version"]
       });
       const signed = payload.sign(keyPair);
       resolve(signed);
@@ -385,7 +423,7 @@ async function signTxAsExtension(password: string, json: any) {
  * sign bytes from dapp as extension
  */
 async function signBytesAsExtension(password: string, json: any) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     const keyPair = keyring.getPair(json["address"]);
     try {
       if (!keyPair.isLocked) {
@@ -394,7 +432,11 @@ async function signBytesAsExtension(password: string, json: any) {
       keyPair.decodePkcs8(password);
       const isDataHex = isHex(json["data"]);
       resolve({
-        signature: u8aToHex(keyPair.sign(isDataHex ? hexToU8a(json["data"]) : stringToU8a(json["data"]))),
+        signature: u8aToHex(
+          keyPair.sign(
+            isDataHex ? hexToU8a(json["data"]) : stringToU8a(json["data"])
+          )
+        )
       });
     } catch (err) {
       resolve({ error: err.message });
@@ -402,7 +444,11 @@ async function signBytesAsExtension(password: string, json: any) {
   });
 }
 
-async function verifySignature(message: string, signature: string, address: string) {
+async function verifySignature(
+  message: string,
+  signature: string,
+  address: string
+) {
   return signatureVerify(message, signature, address);
 }
 
@@ -421,5 +467,5 @@ export default {
   addSignatureAndSend,
   signTxAsExtension,
   signBytesAsExtension,
-  verifySignature,
+  verifySignature
 };

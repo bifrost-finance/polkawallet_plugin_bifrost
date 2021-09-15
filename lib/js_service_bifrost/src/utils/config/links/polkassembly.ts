@@ -2,7 +2,7 @@ export default {
   chains: {
     Kusama: "kusama",
     "Kusama CC3": "kusama",
-    Polkadot: "polkadot",
+    Polkadot: "polkadot"
   },
   create: (chain: string, path: string, data: any) =>
     `https://${chain}.polkassembly.io/${path}/${data.toString()}`,
@@ -11,7 +11,7 @@ export default {
     council: "motion",
     proposal: "proposal",
     referendum: "referendum",
-    treasury: "treasury",
+    treasury: "treasury"
   },
-  url: "https://polkassembly.io/",
+  url: "https://polkassembly.io/"
 };
