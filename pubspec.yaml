@@ -1,6 +1,6 @@
 name: polkawallet_plugin_bifrost
 description: Bifrost network plugin for polkawallet.
-version: 0.3.0
+version: 0.3.2
 homepage:
 
 environment:
@@ -19,16 +19,8 @@ dependencies:
   get_storage: ^2.0.2
   device_info: ^2.0.1
   liquid_progress_indicator: ^0.3.2
-  polkawallet_sdk: ^0.3.0
-  polkawallet_ui:
-#    path: ../ui
-    git:
-      url: https://github.com/polkawallet-io/ui.git
-      ref: 485a9cde97f2446d74a1aeb6d8d63e33683461a5
-
-#dependency_overrides:
-#  polkawallet_sdk:
-#    path: ../sdk
+  polkawallet_sdk: ^0.3.2
+  polkawallet_ui: ^0.3.2
 
 dev_dependencies:
   build_runner: ^2.0.3
