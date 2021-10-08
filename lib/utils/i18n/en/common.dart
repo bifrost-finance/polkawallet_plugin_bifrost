@@ -1,5 +1,7 @@
 const Map<String, String> enCommon = {
   'bifrost': 'Bifrost Hub',
+  'bifrost.dapp': 'Bifrost Dapp',
+  'bifrost.dapp.description':"The latest and most comprehensive Bifrost features",
   'transfer': 'Transfer',
   'receive': 'Receive',
   'cancel': 'Cancel',

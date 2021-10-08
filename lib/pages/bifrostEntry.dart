@@ -9,6 +9,7 @@ import 'package:polkawallet_plugin_bifrost/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/entryPageCard.dart';
+import 'package:polkawallet_ui/pages/dAppWrapperPage.dart';
 
 class BifrostEntry extends StatefulWidget {
   BifrostEntry(this.plugin, this.keyring);
@@ -66,6 +67,29 @@ class _BifrostEntryState extends State<BifrostEntry> {
                   return ListView(
                     padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
                     children: <Widget>[
+                      Container(
+                        height: 68,
+                        margin: EdgeInsets.only(bottom: 16)
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 16),
+                        child: GestureDetector(
+                          child: EntryPageCard(
+                            dic['bifrost.dapp'],
+                            dic['bifrost.dapp.description'],
+                            Image.asset(
+                              'packages/polkawallet_plugin_bifrost/assets/images/public/bifrost.png',
+                              width: 48,
+                            ),
+                            color: Colors.transparent,
+                          ),
+                          onTap: () => Navigator.of(context).pushNamed(
+                            DAppWrapperPage.route,
+                            arguments:
+                            'https://bifrost.app/',
+                          ),
+                        ),
+                      ),
                       Padding(
                         padding: EdgeInsets.only(bottom: 16),
                         child: GestureDetector(
@@ -82,7 +106,7 @@ class _BifrostEntryState extends State<BifrostEntry> {
                           onTap: () => Navigator.of(context)
                               .pushNamed(DemocracyPage.route),
                         ),
-                      )
+                      ),
                     ],
                   );
                 },

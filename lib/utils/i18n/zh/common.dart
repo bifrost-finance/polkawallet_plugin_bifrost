@@ -1,5 +1,7 @@
 const Map<String, String> zhCommon = {
   'bifrost': 'Bifrost 中心',
+  'bifrost.dapp': 'Bifrost Dapp',
+  'bifrost.dapp.description':"最新全量 Bifrost 功能",
   'transfer': '转账',
   'receive': '收款',
   'cancel': '取消',

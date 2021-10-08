@@ -1,5 +1,4 @@
 const Map<String, String> enDex = {
-  'acala': 'Acala Defi Hub',
   'airdrop': 'Airdrop',
   'transfer': 'Transfer',
   'receive': 'Receive',
