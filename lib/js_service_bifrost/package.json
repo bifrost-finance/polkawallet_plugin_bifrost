@@ -9,14 +9,15 @@
         "build-dev": "webpack --mode development"
     },
     "resolutions": {
-        "@polkadot/api": "^5.8.3"
+        "@polkadot/api": "^6.3.1"
     },
     "dependencies": {
-        "@bifrost-finance/api": "1.2.35",
+        "@bifrost-finance/api": "1.3.0",
         "@babel/polyfill": "^7.8.3",
-        "@polkadot/api": "^5.8.3",
+        "@polkadot/api": "^6.3.1",
         "@polkadot/keyring": "^7.3.1",
         "@polkadot/ui-shared": "^0.85.3",
+        "@polkadot/extension-dapp": "^0.40.3",
         "axios": "^0.21.1",
         "bn.js": "^5.1.2",
         "oo7-substrate": "^0.8.0",
