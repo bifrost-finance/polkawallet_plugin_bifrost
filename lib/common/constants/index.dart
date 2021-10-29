@@ -47,6 +47,6 @@ const relay_chain_xcm_fees = {
     'existentialDeposit': '33333333',
   },
 };
-const xcm_dest_weight = '3000000000';
+const xcm_dest_weight = '4000000000';
 
 const bifrost_token_ids = ["BNC", "KSM", "KUSD", "VSKSM", "VSBOND"];

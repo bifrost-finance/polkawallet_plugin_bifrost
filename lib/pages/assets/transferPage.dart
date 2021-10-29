@@ -173,7 +173,7 @@ class _TransferPageState extends State<TransferPage> {
       context: context,
       builder: (_) => CupertinoActionSheet(
         title: Text(dic['cross.chain.select']),
-        actions: [widget.plugin.basic.name, relay_chain_name].map((e) {
+        actions: [widget.plugin.basic.name].map((e) {
           return CupertinoActionSheetAction(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
