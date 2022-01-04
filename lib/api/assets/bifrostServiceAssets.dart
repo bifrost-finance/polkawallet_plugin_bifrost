@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 
 import 'package:polkawallet_plugin_bifrost/polkawallet_plugin_bifrost.dart';
 import 'package:polkawallet_ui/utils/format.dart';
@@ -49,6 +50,28 @@ class BifrostServiceAssets {
             symbol = e['Token'];
           }
           break;
+        case 'LPToken':
+          if (listEquals(e[e.keys.toList().first], ["KAR", 2, "ZLK", 2])) {
+            symbol = 'KAR-ZLK';
+            break;
+          } else if (listEquals(
+              e[e.keys.toList().first], ["KSM", 2, "KSM", 4])) {
+            symbol = 'vsKSM-KSM';
+            break;
+          } else if (listEquals(
+              e[e.keys.toList().first], ["ASG", 0, "KSM", 2])) {
+            symbol = 'BNC-KSM';
+            break;
+          } else if (listEquals(
+              e[e.keys.toList().first], ["KSM", 2, "KUSD", 3])) {
+            symbol = 'KSM-kUSD';
+            break;
+          } else if (listEquals(
+              e[e.keys.toList().first], ["ASG", 0, "ZLK", 2])) {
+            symbol = 'BNC-ZLK';
+            break;
+          }
+          break;
         default:
           {
             symbol = e['Token'];
@@ -61,7 +84,7 @@ class BifrostServiceAssets {
         'api.query.tokens.accounts',
         [address, e],
         channel,
-            (Map data) {
+        (Map data) {
           callback({
             'symbol': symbol,
             'name': symbol,
@@ -97,12 +120,12 @@ class BifrostServiceAssets {
   }
 
   Future<bool> checkExistentialDepositForTransfer(
-      String address,
-      String token,
-      int decimal,
-      String amount, {
-        String direction = 'to',
-      }) async {
+    String address,
+    String token,
+    int decimal,
+    String amount, {
+    String direction = 'to',
+  }) async {
     final res = await plugin.sdk.webView.evalJavascript(
         'bifrost.checkExistentialDepositForTransfer(api, "$address", "$token", $decimal, $amount, "$direction")');
     return res['result'] as bool;

@@ -39,10 +39,13 @@ flutter:
     - assets/images/public/bifrost.png
     - assets/images/public/bifrost_gray.png
     - assets/images/public/bifrost_empty.svg
+    - assets/images/tokens/ZLK.png
+    - assets/images/tokens/KAR.png
     - assets/images/tokens/BNC.png
-    - assets/images/tokens/VSKSM.png
     - assets/images/tokens/KSM.png
     - assets/images/tokens/KUSD.png
+    - assets/images/tokens/VSDOT.png
+    - assets/images/tokens/VSKSM.png
     - assets/images/tokens/VSBOND.png
     - assets/images/assets_up.png
     - assets/images/assets_down.png

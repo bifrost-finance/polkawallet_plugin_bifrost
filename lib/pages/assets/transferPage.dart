@@ -94,6 +94,21 @@ class _TransferPageState extends State<TransferPage> {
           currencyId = {"VSToken": "KSM", "decimals": 12};
         }
         break;
+      case 'vsDOT':
+        {
+          currencyId = {"VSToken": "DOT", "decimals": 10};
+        }
+        break;
+      case 'ZLK':
+        {
+          currencyId = {"Token": "ZLK", "decimals": 18};
+        }
+        break;
+      case 'KAR':
+        {
+          currencyId = {"Token": "KAR", "decimals": 12};
+        }
+        break;
       case 'KUSD':
         {
           currencyId = {"Stable": _token, "decimals": 12};
@@ -103,6 +118,46 @@ class _TransferPageState extends State<TransferPage> {
         {
           currencyId = {
             "vsBond": ["BNC", 2001, 13, 20],
+            "decimals": 12
+          };
+        }
+        break;
+      case 'KSM-kUSD':
+        {
+          currencyId = {
+            "LPToken": ["KSM", 2, "KUSD", 3],
+            "decimals": 12
+          };
+        }
+        break;
+      case 'BNC-KSM':
+        {
+          currencyId = {
+            "LPToken": ["ASG", 0, "KSM", 2],
+            "decimals": 12
+          };
+        }
+        break;
+      case 'vsKSM-KSM':
+        {
+          currencyId = {
+            "LPToken": ["KSM", 2, "KSM", 4],
+            "decimals": 12
+          };
+        }
+        break;
+      case 'BNC-ZLK':
+        {
+          currencyId = {
+            "LPToken": ["ASG", 0, "ZLK", 2],
+            "decimals": 12
+          };
+        }
+        break;
+      case 'KAR-ZLK':
+        {
+          currencyId = {
+            "LPToken": ["KAR", 2, "ZLK", 2],
             "decimals": 12
           };
         }
@@ -263,6 +318,21 @@ class _TransferPageState extends State<TransferPage> {
       var currencyId;
 
       switch (_token) {
+        case 'vsDOT':
+          {
+            currencyId = {"VSToken": "DOT", "decimals": 10};
+          }
+          break;
+        case 'ZLK':
+          {
+            currencyId = {"Token": "ZLK", "decimals": 18};
+          }
+          break;
+        case 'KAR':
+          {
+            currencyId = {"Token": "KAR", "decimals": decimals};
+          }
+          break;
         case 'vsKSM':
           {
             currencyId = {"VSToken": "KSM", "decimals": decimals};
@@ -278,6 +348,46 @@ class _TransferPageState extends State<TransferPage> {
             currencyId = {
               "vsBond": ["BNC", 2001, 13, 20],
               "decimals": decimals
+            };
+          }
+          break;
+        case 'KSM-kUSD':
+          {
+            currencyId = {
+              "LPToken": ["KSM", 2, "KUSD", 3],
+              "decimals": 12
+            };
+          }
+          break;
+        case 'BNC-KSM':
+          {
+            currencyId = {
+              "LPToken": ["ASG", 0, "KSM", 2],
+              "decimals": 12
+            };
+          }
+          break;
+        case 'vsKSM-KSM':
+          {
+            currencyId = {
+              "LPToken": ["KSM", 2, "KSM", 4],
+              "decimals": 12
+            };
+          }
+          break;
+        case 'BNC-ZLK':
+          {
+            currencyId = {
+              "LPToken": ["ASG", 0, "ZLK", 2],
+              "decimals": 12
+            };
+          }
+          break;
+        case 'KAR-ZLK':
+          {
+            currencyId = {
+              "LPToken": ["KAR", 2, "ZLK", 2],
+              "decimals": 12
             };
           }
           break;

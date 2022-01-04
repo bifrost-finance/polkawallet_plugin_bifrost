@@ -21,11 +21,29 @@ class BifrostApiAssets {
       String chain, String address, Function(List<TokenBalanceData>) callback,
       {bool transferEnabled = true}) async {
     final tokens = List.of([
+      {"VSToken": "DOT"},
       {"VSToken": "KSM"},
       {"Token": "KSM"},
+      {"Token": "KAR"},
+      {"Token": "ZLK"},
       {"Stable": "KUSD"},
       {
         "VSBond": ["BNC", 2001, 13, 20]
+      },
+      {
+        "LPToken": ["KSM", 2, "KSM", 4]
+      },
+      {
+        "LPToken": ["ASG", 0, "KSM", 2]
+      },
+      {
+        "LPToken": ["KSM", 2, "KUSD", 3]
+      },
+      {
+        "LPToken": ["ASG", 0, "ZLK", 2]
+      },
+      {
+        "LPToken": ["KAR", 2, "ZLK", 2]
       }
     ]);
     _tokenBalances.clear();
@@ -38,9 +56,13 @@ class BifrostApiAssets {
       callback(_tokenBalances.values
           .map((e) => TokenBalanceData(
                 id: e['symbol'],
-                symbol: e['symbol'],
-                name: e['name'],
-                decimals: 12,
+                symbol: e['symbol'].contains('-') ? 'Lp ' + e['symbol'] : e['symbol'],
+                name: e['symbol'].contains('-') ? 'Lp ' + e['name'] : e['name'],
+                decimals: e['symbol'] == 'ZLK'
+                    ? 18
+                    : e['symbol'] == 'vsDOT'
+                        ? 10
+                        : 12,
                 amount: e['balance']['free'].toString(),
                 locked: e['balance']['frozen'].toString(),
                 reserved: e['balance']['reserved'].toString(),
