@@ -22,7 +22,7 @@ const bifrost_plugin_cache_key = 'plugin_bifrost';
 final BigInt bifrostIntDivisor = BigInt.parse('1000000000000');
 
 const bifrost_genesis_hash =
-    '0xaa91d4910b841fb60aa13afbc1d18cd63525d82b1bbfe0e0c24b82a9ba949db1';
+    '0x9f28c6a68e0fc9646eff64935684f6eeeece527e37bbe1f213d22caa1d9d6bed';
 
 const bifrost_token_decimals = 12;
 const karura_stable_coin = 'KUSD';
